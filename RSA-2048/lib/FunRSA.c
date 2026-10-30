@@ -3,9 +3,9 @@
 #define QTD_BLOCO  130
 
 
-static void gerador_de_numero(uint32_t maximo, uint32_t minimo, uint32_t *num) {
+static void gerador_de_numero(uint32_t maximo, uint32_t minimo, uint32_t *num, int debug) {
     *num = (uint32_t)(rand() % (maximo - minimo + 1)) + minimo;
-    printf("%u\n", *num);
+        if(debug == 1) printf("\n[DEBUG] %u\n", *num);
 }
 
 static int verifica_primo(uint32_t *num) {
@@ -72,7 +72,7 @@ static int converte_hex(uint32_t *c, char *hex) {
     return 0;
 }
 
-static int chave_privada(uint32_t phi, uint32_t e, uint32_t *d) {
+static int chave_privada(uint32_t phi, uint32_t e, uint32_t *d, int debug) {
     // Algoritmo de Euclides estendido para encontrar d
     // O Teorema ou Identidade de Bézout afirma que 
     // para quaisquer dois números inteiros não nulos A e B 
@@ -99,7 +99,7 @@ static int chave_privada(uint32_t phi, uint32_t e, uint32_t *d) {
         if (contador >= 100) return 1;
     }
 
-    printf("phi: %d, e: %d, x0: %d\n", phi, e, x0);
+    if(debug == 1) printf("\n\n[DEBUG] phi: %d, e: %d, x0: %d\n", phi, e, x0);    
 
     if (phi_temp != 1) return 2;
     if (x0 < 0) x0 += phi; // Ajusta d para ser positivo
@@ -110,11 +110,11 @@ static int chave_privada(uint32_t phi, uint32_t e, uint32_t *d) {
     return 0; // Sucesso
 }
 
- static int chave_publica(uint32_t phi, uint32_t *n, uint32_t *e) {
+ static int chave_publica(uint32_t phi, uint32_t *n, uint32_t *e, int debug) {
     int contador = 0;
 
     do { 
-        gerador_de_numero(phi, 2, e); // Gera um número aleatório para e
+        gerador_de_numero(phi, 2, e, debug); // Gera um número aleatório para e
 
         contador++;
         if (contador >= 500) return 1;
@@ -124,31 +124,49 @@ static int chave_privada(uint32_t phi, uint32_t e, uint32_t *d) {
     return 0; // Sucesso
 }
 
-static int criptografar(char *msg, uint32_t n, uint32_t e, char *output) {
+static int criptografar(char *msg, uint32_t n, uint32_t e, int *output, int debug) {
     if (msg == NULL) return 1; // Verifica se a mensagem é nula
     size_t len = strlen(msg);
     if (len == 0) return 1; // Verifica se a mensagem está vazia
 
-    printf("Valor Decimal: "); for (size_t i = 0; i < len; i++) { uint32_t m = msg[i]; printf ("%u ", m);}
-    printf("\n");
+    if(debug == 1){
+        printf("\n[DEBUG] Valor Decimal: "); 
+        for (size_t i = 0; i < len; i++) { 
+            uint32_t m = msg[i]; printf ("%u ", m);
+        }
+        printf("\n");
+        printf("\n[DEBUG] ");     
+    }
+
     for (size_t i = 0; i < len; i++) {
         uint32_t m = msg[i]; // Converte o caractere para um número
         uint32_t c = (exp_modular(m, e, n));
-        printf ("%u ", c);
+        if(debug == 1) printf ("%u ", c);
         output[i] = c;
     }
     return 0; // Sucesso
 }
 
-static int descriptografar(char *criptografada, uint32_t n, uint32_t d, int *output) {
+static int descriptografar(int *criptografada, uint32_t n, uint32_t d, int *output, int debug) {
     if (criptografada == NULL) return -1; // Verifica se a mensagem criptografada é nula
     
-    size_t len = strlen(criptografada);
+    size_t len = sizeof(criptografada) / sizeof(criptografada[0]);
     if (len == 0) return -1; // Verifica se a mensagem criptografada está vazia
-    printf("Valor Decimal: "); for (size_t i = 0; i < len; i++) { uint32_t m = criptografada[i]; printf ("%u ", m);}
+    
+    if(debug == 1){
+        printf("\n[DEBUG] Valor Decimal: "); 
+        for (size_t i = 0; i < len; i++) { 
+            uint32_t m = criptografada[i]; 
+            printf ("%u ", m);
+        }    
+        printf("\n");
+        printf("\n[DEBUG] ");      
+    }
+
     for (size_t i = 0; i < len; i++) {
         uint32_t m = exp_modular(criptografada[i], d, n);
-        printf ("%u ", m);
+
+        if(debug == 1) printf ("%u ", m);
         output[i] = exp_modular(criptografada[i], d, n); // Converte o número de volta para caractere
         // uint32_t c = (uint32_t)criptografada[i];
         // uint32_t m = 1;
@@ -158,15 +176,15 @@ static int descriptografar(char *criptografada, uint32_t n, uint32_t d, int *out
     return 0; // Sucesso    
 }
 
-static int inicia_criptografia(int opcao, uint32_t *p, uint32_t *q, char *msg, uint32_t *n, uint32_t *e, uint32_t *d, char *output, int debug){
+static int inicia_criptografia(int opcao, uint32_t *p, uint32_t *q, char *msg, uint32_t *n, uint32_t *e, uint32_t *d, int *output, int debug){
     int retorno = verifica_p_q(p, q);
     uint32_t phi = 0;
 
     if (retorno != 0){
         switch (retorno){
-            case 1: printf("\np e q precisam ser maiores que 1\n"); break;
-            case 2: printf("\np nao e primo\n"); break;
-            case 3: printf("\nq nao e primo\n"); break;
+            case 1: printf("\n[ERRO] p e q precisam ser maiores que 1\n"); break;
+            case 2: printf("\n[ERRO] p nao e primo\n"); break;
+            case 3: printf("\n[ERRO] q nao e primo\n"); break;
         }
         return 1; // codigo de erro da verifica_p_q 
     }
@@ -175,52 +193,52 @@ static int inicia_criptografia(int opcao, uint32_t *p, uint32_t *q, char *msg, u
 
     if ( retorno != 0){
         switch(*n){
-            case 0: printf("\nn nao pode ser 0.\nValor de n: %u", *n); break;
-            default: printf("\nphi nao pode ser 0.\nValor de phi: %u", phi); break;
+            case 0: printf("\n[ERRO] n nao pode ser 0.\n[ERRO] Valor de n: %u", *n); break;
+            default: printf("\n[ERRO] phi nao pode ser 0.\n[ERRO] Valor de phi: %u", phi); break;
         }
         return 2; // codigo de erro da calcula_bases 
     } 
 
-    retorno = chave_publica(phi, n, e); // Calcula a chave pública (n, e) com base em p e q
+    retorno = chave_publica(phi, n, e, debug); // Calcula a chave pública (n, e) com base em p e q
 
     if (retorno != 0){
         switch (retorno){
-            case 1: printf("\nNao foi possivel calcular a chave PUBLICA, Contador atingiu o limite\n"); break;
+            case 1: printf("\n[ERRO] Nao foi possivel calcular a chave PUBLICA, Contador atingiu o limite\n"); break;
         }
         return 3; // codigo de erro da chave_publica 
     }
 
-    retorno = chave_privada(phi, *e, d); // Calcula a chave privada (d) com base em p, q e e
+    retorno = chave_privada(phi, *e, d, debug); // Calcula a chave privada (d) com base em p, q e e
 
     if (retorno != 0){
         switch (retorno){
-            case 1: printf("\nNao foi possivel calcular a chave PRIVADA, Contador atingiu o limite\n"); break;
-            case 2: printf("\nphi está maior que 1\n"); break;
+            case 1: printf("\n[ERRO] Nao foi possivel calcular a chave PRIVADA, Contador atingiu o limite\n"); break;
+            case 2: printf("\n[ERRO] phi está maior que 1\n"); break;
         }
         return 4; // codigo de erro da chave_privada 
     }
 
-    retorno = criptografar(msg, *n, *e, output); // Chama a função de criptografia com a mensagem, n e e
+    retorno = criptografar(msg, *n, *e, output, debug); // Chama a função de criptografia com a mensagem, n e e
 
     if (retorno != 0){
         switch (retorno){
-            case 1: printf("\nA mensagem está vazia\n"); break;
-            case 2: printf("\nphi esta maior que 1\n"); break;
-            case 3: printf("\nq precisa ser maior que 1\n"); break;
+            case 1: printf("\n[ERRO] A mensagem está vazia\n"); break;
+            case 2: printf("\n[ERRO] phi esta maior que 1\n"); break;
+            case 3: printf("\n[ERRO] q precisa ser maior que 1\n"); break;
         }
         return 5; // codigo de erro da criptografar 
     }
     return 0; // Sucesso
 }
 
-int rsa(int opcao, uint32_t *p, uint32_t *q, char *msg, uint32_t *n, uint32_t *e, uint32_t *d, char *output, int debug) {
+int rsa(int opcao, s_RSA *Cifra, char *msg, int *output, int debug) {
 
     if (opcao == 1) {    
 
-        return inicia_criptografia(opcao, p, q, msg, n, e, d, output, debug);
+        return inicia_criptografia(opcao, &Cifra->p, &Cifra->q, msg, &Cifra->n, &Cifra->e, &Cifra->d, output, debug);
  
     } else if (opcao == 2) {
-        descriptografar(output, *n, *d, output); // Chama a função de descriptografia com a mensagem criptografada, n e d
+        descriptografar(output, Cifra->n, Cifra->d, output, debug); // Chama a função de descriptografia com a mensagem criptografada, n e d
     } else {
         return -1; 
     }
