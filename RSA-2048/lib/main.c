@@ -1,62 +1,43 @@
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
 #include "FunRSA.h"
 
+int main(void) {
+    static char n[1024], e[64], d[1024], cifrado[8192], decifrado[4096];
+    const char *msg = "Ola, RSA! Seguranca da informacao com acentuacao: coracao.";
 
-int main ()
-{
-    s_RSA cifra = {.p = 61, .q = 53};
+    clock_t t0 = clock();
+    int r = rsa_gerar_chaves(2048);
+    printf("gerar_chaves(2048) = %d  (%.2f s)\n", r, (double)(clock() - t0) / CLOCKS_PER_SEC);
+    if (r) return 1;
 
-    int opcao = 0, debug = 1; 
+    rsa_obter_n(n, sizeof n);
+    rsa_obter_e(e, sizeof e);
+    rsa_obter_d(d, sizeof d);
+    printf("n = %.64s...\ne = %s\nd = %.64s...\n\n", n, e, d);
 
-    char msg[] = "Hello, RSA!"; // Mensagem a ser criptografada
-    size_t len = strlen(msg);
-    int *output = malloc(len * sizeof(int)); // Buffer para armazenar a saída
+    r = rsa_criptografar(msg, cifrado, sizeof cifrado);
+    printf("criptografar -> %d chars hex\n%.80s...\n\n", r, cifrado);
 
-    do {
-        printf("\nDigite 1 para criptografar | 2 para descriptografar | 3 ver mensagem | 4 para ver as chaves | 0 sair\n--> ");
-        scanf("%d", &opcao);
+    r = rsa_descriptografar(cifrado, decifrado, sizeof decifrado);
+    printf("descriptografar -> %d bytes: \"%s\"\n", r, decifrado);
 
-//=========================================================================== Criptografar ou Descriptografar
-        if (opcao == 1 || opcao == 2){                                                  
-            int resultado = rsa(opcao, &cifra,  msg,  output, debug);
-            
-            // ------------------------------- Sucesso
-            if (resultado == 0) {
-                printf("\nMensagem criptografada: %s\n", output);
-                printf("\nOperacao concluida com sucesso.\n");
+    /* Cifrar duas vezes a mesma mensagem da textos diferentes (padding aleatorio) */
+    char c2[8192];
+    rsa_criptografar(msg, c2, sizeof c2);
+    printf("mesma msg, cifrado igual? %s\n", strcmp(cifrado, c2) == 0 ? "sim" : "nao");
 
-            // ------------------------------- Erro
-            } else {
-                printf("\n\nErro na operacao. Codigo de erro: %d\n", resultado);
-                printf("\n********* Codigos de Erro *********\n");
-                printf("\n\t1) verifica_p_q\n\t2) calcula_bases\n\t3) chave_publica\n\t4) chave_privada\n\t5) criptografar\n");
-            }
+    /* Chave errada: troca o ultimo digito de d */
+    char d_errado[1024];
+    strcpy(d_errado, d);
+    d_errado[strlen(d_errado) - 1] = (d_errado[strlen(d_errado) - 1] == '0') ? '1' : '0';
+    rsa_definir_chave_privada(n, d_errado);
+    r = rsa_descriptografar(cifrado, decifrado, sizeof decifrado);
+    printf("com chave errada -> codigo %d (esperado -4)\n", r);
 
-//===========================================================================  Ver chaves
-        } else if (opcao ==  4) {                                                       
-            printf("\nChave publica: e:%u, n:%u\n", cifra.e, cifra.n);
-            printf("Chave privada: d:%u, n:%u\n", cifra.d, cifra.n);
-
-//=========================================================================== Ver Mensagem criptografada
-        } else if (opcao ==  3) {                                                        
-            printf("\nMensagem antes da criptografia: %s\n", msg);
-            printf("Mensagem criptografada: ");
-            if (debug == 1) printf("\n%d\n",len);
-            for (int i = 0; i < len; i++) printf("%d ", output[i]);
-            printf("\n");
-
-//=========================================================================== Liga/Desliga Debug
-        } else if (opcao == 99){
-            debug = !debug;
-
-//=========================================================================== Encerra o Programa
-        } else if (opcao == 0){
-            printf("\nPrograma encerrado\n\n");
-
-//=========================================================================== ERRO
-        } else { printf("\nErro digite uma opcao valida\n"); }
-
-    } while (opcao != 0) ;
-
-    free(output); // Libera a memória alocada para output
+    rsa_definir_chave_privada(n, d);
+    r = rsa_descriptografar(cifrado, decifrado, sizeof decifrado);
+    printf("com chave certa  -> %d bytes: \"%s\"\n", r, decifrado);
     return 0;
 }
