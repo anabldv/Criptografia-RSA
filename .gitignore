@@ -1,3 +1,4 @@
 /Criptografia-RSA/RSA-2048/lib/*.o
-
+.venv/
+__pycache__/
 *.o

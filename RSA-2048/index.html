@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste de Descriptografia RSA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .key-box {
+      background: #eef9ff;
+      border-left: 4px solid #3498db;
+      padding: 10px;
+      margin-top: 10px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Testador RSA</h1>
+
+  <!-- Configuração das Chaves -->
+  <div class="card">
+    <h2>1. Parâmetros (Primos p e q)</h2>
+    <div class="grid">
+      <div>
+        <label for="p">Número Primo p:</label>
+        <input type="number" id="p" value="61" placeholder="Ex: 61">
+      </div>
+      <div>
+        <label for="q">Número Primo q:</label>
+        <input type="number" id="q" value="53" placeholder="Ex: 53">
+      </div>
+    </div>
+    <button onclick="gerarChaves()">Calcular Chaves</button>
+
+    <div class="key-box">
+      <p><strong>Chave Pública (e, n):</strong> <span id="public-key">-</span></p>
+      <p><strong>Chave Privada (d, n):</strong> <span id="private-key">-</span></p>
+    </div>
+  </div>
+
+  <!-- Descriptografia -->
+  <div class="card">
+    <h2>2. Descriptografar Texto</h2>
+    <label for="cipherText">Texto Criptografado (números separados por espaço):</label>
+    <textarea id="cipherText" rows="3" placeholder="Ex: 2790 2000 1500..."></textarea>
+
+    <button onclick="descriptografar()">Descriptografar</button>
+
+    <label for="decryptedText">Texto Descriptografado:</label>
+    <textarea id="decryptedText" rows="3" readonly></textarea>
+  </div>
+
+  <script>
+    let keyRSA = { e: 0, d: 0, n: 0 };
+
+    // Algoritmo de Euclides Extendido para encontrar 'd' (inverso modular)
+    function modInverse(e, phi) {
+      let m0 = phi, t, q;
+      let x0 = 0, x1 = 1;
+
+      if (phi === 1) return 0;
+
+      while (e > 1) {
+        q = Math.floor(e / phi);
+        t = phi;
+        phi = e % phi;
+        e = t;
+        t = x0;
+        x0 = x1 - q * x0;
+        x1 = t;
+      }
+
+      if (x1 < 0) x1 += m0;
+      return x1;
+    }
+
+    // Exponenciação Modular para calcular (c^d) mod n com segurança
+    function modPow(base, exp, mod) {
+      let res = 1n;
+      base = BigInt(base) % BigInt(mod);
+      exp = BigInt(exp);
+      mod = BigInt(mod);
+
+      while (exp > 0n) {
+        if (exp % 2n === 1n) res = (res * base) % mod;
+        base = (base * base) % mod;
+        exp = exp / 2n;
+      }
+      return Number(res);
+    }
+
+    function gerarChaves() {
+      const p = parseInt(document.getElementById('p').value);
+      const q = parseInt(document.getElementById('q').value);
+
+      if (!p || !q) {
+        alert('Por favor, preencha os valores de p e q.');
+        return;
+      }
+
+      const n = p * q;
+      const phi = (p - 1) * (q - 1);
+      
+      // Escolhe um 'e' padrão (comumente 17 para números pequenos ou 65537)
+      let e = 17;
+      if (phi <= e) e = 3; // Ajuste para números primos muito pequenos
+
+      const d = modInverse(e, phi);
+
+      keyRSA = { e, d, n };
+
+      document.getElementById('public-key').innerText = `(${e}, ${n})`;
+      document.getElementById('private-key').innerText = `(${d}, ${n})`;
+    }
+
+    function descriptografar() {
+      if (!keyRSA.n) {
+        alert('Por favor, gere as chaves primeiro.');
+        return;
+      }
+
+      const input = document.getElementById('cipherText').value.trim();
+      if (!input) return;
+
+      // Divide a entrada por espaços ou vírgulas
+      const cipherArray = input.split(/[\s,]+/);
+      
+      let textoResultado = '';
+      for (let code of cipherArray) {
+        if (code) {
+          const charCode = modPow(code, keyRSA.d, keyRSA.n);
+          textoResultado += String.fromCharCode(charCode);
+        }
+      }
+
+      document.getElementById('decryptedText').value = textoResultado;
+    }
+
+    // Gera as chaves ao carregar a página com os valores padrão (61 e 53)
+    gerarChaves();
+  </script>
+</body>
+</html>
