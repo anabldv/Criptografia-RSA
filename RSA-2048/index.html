@@ -10,15 +10,21 @@
       max-width: 600px;
       margin: 30px auto;
       padding: 20px;
-      background-color: #f4f4f9;
+      background-color: #000000;
       color: #333;
     }
     h1 {
       text-align: center;
-      color: #2c3e50;
+      color: #6e8194;
     }
+
+    h2{
+      text-align: center;
+      color: #d7e1eb;
+    }
+
     .card {
-      background: #fff;
+      background: #4b4646;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -31,6 +37,7 @@
     }
     label {
       font-weight: bold;
+      color: #fdfdfd;
       display: block;
       margin-top: 10px;
     }
@@ -46,7 +53,7 @@
       width: 100%;
       padding: 10px;
       background-color: #3498db;
-      color: white;
+      color: rgb(255, 255, 255);
       border: none;
       border-radius: 4px;
       font-size: 16px;
@@ -57,7 +64,7 @@
       background-color: #2980b9;
     }
     .key-box {
-      background: #eef9ff;
+      background: #4b4d4e;
       border-left: 4px solid #3498db;
       padding: 10px;
       margin-top: 10px;
@@ -94,7 +101,7 @@
   <div class="card">
     <h2>2. Descriptografar Texto</h2>
     <label for="cipherText">Texto Criptografado (números separados por espaço):</label>
-    <textarea id="cipherText" rows="3" placeholder="Ex: 2790 2000 1500..."></textarea>
+    <textarea id="cipherText" rows="3" placeholder="Ex: 2790 2000 1500"></textarea>
 
     <button onclick="descriptografar()">Descriptografar</button>
 
@@ -105,88 +112,46 @@
   <script>
     let keyRSA = { e: 0, d: 0, n: 0 };
 
-    // Algoritmo de Euclides Extendido para encontrar 'd' (inverso modular)
-    function modInverse(e, phi) {
-      let m0 = phi, t, q;
-      let x0 = 0, x1 = 1;
-
-      if (phi === 1) return 0;
-
-      while (e > 1) {
-        q = Math.floor(e / phi);
-        t = phi;
-        phi = e % phi;
-        e = t;
-        t = x0;
-        x0 = x1 - q * x0;
-        x1 = t;
-      }
-
-      if (x1 < 0) x1 += m0;
-      return x1;
+    async function gerarChaves() {
+        const response = await fetch('http://127.0.0.1:8000/gerar-chaves?bits=2048', { method: 'POST' });
+        const data = await response.json();
+        
+        // Exibe apenas o começo das chaves geradas pela DLL para não quebrar o layout
+        document.getElementById('public-key').innerText = `(${data.e}, ${data.n.substring(0, 15)}...)`;
+        document.getElementById('private-key').innerText = `(${data.d.substring(0, 15)}..., n)`;
     }
 
-    // Exponenciação Modular para calcular (c^d) mod n com segurança
-    function modPow(base, exp, mod) {
-      let res = 1n;
-      base = BigInt(base) % BigInt(mod);
-      exp = BigInt(exp);
-      mod = BigInt(mod);
-
-      while (exp > 0n) {
-        if (exp % 2n === 1n) res = (res * base) % mod;
-        base = (base * base) % mod;
-        exp = exp / 2n;
-      }
-      return Number(res);
+    async function descriptografar() {
+        const cifradoHex = document.getElementById('cipherText').value.trim();
+        
+        const response = await fetch('http://127.0.0.1:8000/descriptografar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hex_cifrado: cifradoHex })
+        });
+        
+        const data = await response.json();
+        document.getElementById('decryptedText').value = data.texto || "Erro na descriptografia";
     }
 
-    function gerarChaves() {
-      const p = parseInt(document.getElementById('p').value);
-      const q = parseInt(document.getElementById('q').value);
+    async function criptografar() {
+        // Supondo que criou um <textarea id="plainText"> no seu HTML
+        const textoOriginal = document.getElementById('plainText').value.trim();
+        
+        if (!textoOriginal) return;
 
-      if (!p || !q) {
-        alert('Por favor, preencha os valores de p e q.');
-        return;
-      }
-
-      const n = p * q;
-      const phi = (p - 1) * (q - 1);
-      
-      // Escolhe um 'e' padrão (comumente 17 para números pequenos ou 65537)
-      let e = 17;
-      if (phi <= e) e = 3; // Ajuste para números primos muito pequenos
-
-      const d = modInverse(e, phi);
-
-      keyRSA = { e, d, n };
-
-      document.getElementById('public-key').innerText = `(${e}, ${n})`;
-      document.getElementById('private-key').innerText = `(${d}, ${n})`;
+        const response = await fetch('http://127.0.0.1:8000/criptografar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ texto: textoOriginal })
+        });
+        
+        const data = await response.json();
+        
+        // Coloca o resultado hexadecimal no campo de texto cifrado
+        document.getElementById('cipherText').value = data.cifrado || "Erro na criptografia";
     }
 
-    function descriptografar() {
-      if (!keyRSA.n) {
-        alert('Por favor, gere as chaves primeiro.');
-        return;
-      }
-
-      const input = document.getElementById('cipherText').value.trim();
-      if (!input) return;
-
-      // Divide a entrada por espaços ou vírgulas
-      const cipherArray = input.split(/[\s,]+/);
-      
-      let textoResultado = '';
-      for (let code of cipherArray) {
-        if (code) {
-          const charCode = modPow(code, keyRSA.d, keyRSA.n);
-          textoResultado += String.fromCharCode(charCode);
-        }
-      }
-
-      document.getElementById('decryptedText').value = textoResultado;
-    }
 
     // Gera as chaves ao carregar a página com os valores padrão (61 e 53)
     gerarChaves();
