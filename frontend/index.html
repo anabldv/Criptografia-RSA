@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criptografia RSA</title>
+  
+  <!--  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- arquivo style.css -->
+  <link rel="stylesheet" href="style.css">  
+
+
+</head>
+<body>
+
+  <div class="container">
+    <header class="header">
+      <div class="terminal-badge">
+        <span class="status-dot"></span>
+        SYS::ENCRYPT // v1.0
+      </div>
+      <h1>Criptografar & Descriptografar</h1>
+      <p>Processe suas mensagens em tempo real de forma local e segura.</p>
+    </header>
+
+    <main class="panel">
+      <!-- Entrada -->
+      <section class="box-group">
+        <div class="box-label">
+          <span>ENTRADA / TEXTO</span>
+          <span id="inputCount" class="counter">0 caracteres</span>
+        </div>
+        <textarea id="inputText" placeholder="Digite ou cole sua mensagem aqui..."></textarea>
+      </section>
+
+      <!-- Configurações e Ações -->
+      <section class="controls">
+        <div class="config-area">
+          <div class="method-selector">
+            <label for="methodSelect">Método:</label>
+            <select id="methodSelect">
+              <option value="base64">Base64 (UTF-8)</option>
+              <option value="cesar">Cifra de César</option>
+              <option value="hex">Hexadecimal</option>
+              <option value="reverse">Inversão de Texto</option>
+            </select>
+          </div>
+
+          <div id="cesarConfig" class="cesar-config hidden">
+            <label for="cesarShift">Salto:</label>
+            <input type="number" id="cesarShift" value="3" min="1" max="25">
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button id="btnEncrypt" class="btn primary">Criptografar</button>
+          <button id="btnDecrypt" class="btn secondary">Descriptografar</button>
+          <button id="btnClear" class="btn ghost">Limpar</button>
+        </div>
+      </section>
+
+      <!-- Saída -->
+      <section class="box-group">
+        <div class="box-label">
+          <span>SAÍDA / RESULTADO</span>
+          <span id="outputCount" class="counter">0 caracteres</span>
+        </div>
+        <div class="output-wrapper">
+          <textarea id="outputText" readonly placeholder="O resultado aparecerá aqui..."></textarea>
+          <button id="btnCopy" class="btn-copy" type="button" title="Copiar resultado">
+            <svg id="copyIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="copyFeedback">Copiar</span>
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- arquivo JavaScript. script.js -->
+  <script src="script.js"></script>
+
+</body>
+</html>
