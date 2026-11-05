@@ -1,8 +1,19 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
 import rsa as R  # Importa o seu wrapper da .dll
 
 app = FastAPI(title="API FunRSA")
+
+# Configuração que permite o navegador fazer o 'OPTIONS' e liberar a comunicação
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Em produção, troque "*" pela URL do seu frontend.
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"],  
+)
 
 # Modelos de dados esperados no corpo (body) das requisições JSON
 class Mensagem(BaseModel):

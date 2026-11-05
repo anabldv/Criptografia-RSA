@@ -43,7 +43,7 @@ btnCripto.addEventListener('click', () => {                                     
     };
 
     try {
-        const resposta = fetch('http://127.0.0.1:8000/gerar-chaves?bits=2048', {
+        const resposta = fetch('http://127.0.0.1:8000/criptografar', {
             method: 'POST', // Define o método HTTP
             headers: {
                 'Content-Type': 'application/json' // Avisa a API que estamos enviando um JSON
@@ -72,7 +72,7 @@ btnDecripto.addEventListener('click', () => {                                   
     const shift = cesarShift.value;
 
     try {
-        const resposta = fetch('http://127.0.0.1:8000/gerar-chaves?bits=2048', {
+        const resposta = fetch('http://127.0.0.1:8000//descriptografar', {
         method: 'POST', // Define o método HTTP
         headers: {
             'Content-Type': 'application/json' // Avisa a API que estamos enviando um JSON
@@ -102,7 +102,7 @@ btnLimpa.addEventListener('click', () => {                                      
 
 btnPublica.addEventListener('click', () => {                                    // Exibir Chaves publicas
     try {
-        const resposta = fetch('http://127.0.0.1:8000/gerar-chaves?bits=2048');
+        const resposta = fetch('http://127.0.0.1:8000//exibir-publica');
         
         if (!resposta.ok) {
             throw new Error(`Erro HTTP: ${resposta.status}`);
@@ -121,7 +121,7 @@ btnPrivada.addEventListener('click', () => {                                    
     if (!text) return;
 
     try {
-        const resposta = fetch('http://127.0.0.1:8000/gerar-chaves?bits=2048', {
+        const resposta = fetch('http://127.0.0.1:8000/exibir-privada', {
               method: 'POST', // Define o método HTTP
               headers: {
             'Content-Type': 'application/json' // Avisa a API que estamos enviando um JSON
