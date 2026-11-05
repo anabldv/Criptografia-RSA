@@ -1,128 +1,152 @@
-const inputText = document.getElementById('inputText');
-const outputText = document.getElementById('outputText');
-const methodSelect = document.getElementById('methodSelect');
-const cesarConfig = document.getElementById('cesarConfig');
-const cesarShift = document.getElementById('cesarShift');
-const inputCount = document.getElementById('inputCount');
-const outputCount = document.getElementById('outputCount');
+// Campos de textos
+const entradaTexto = document.getElementById('entradaTexto');
+const saidaTexto = document.getElementById('saidaTexto');
+const entradaContador = document.getElementById('entradaContador');
+const saidaContador = document.getElementById('saidaContador');
 
-const btnEncrypt = document.getElementById('btnEncrypt');
-const btnDecrypt = document.getElementById('btnDecrypt');
-const btnClear = document.getElementById('btnClear');
-const btnCopy = document.getElementById('btnCopy');
-const copyFeedback = document.getElementById('copyFeedback');
+// Variaveis Numericas
+const selecP = document.getElementById('numeroP');
+const selecQ = document.getElementById('numeroQ');
 
-// Alternar visibilidade do controle de deslocamento da Cifra de César
-methodSelect.addEventListener('change', () => {
-    if (methodSelect.value === 'cesar') {
-    cesarConfig.classList.remove('hidden');
-    } else {
-    cesarConfig.classList.add('hidden');
-    }
-});
+// Botões
+const btnCripto = document.getElementById('btnCripto');
+const btnDecripto = document.getElementById('btnDecripto');
+const btnLimpa = document.getElementById('btnLimpa');
+const btnCopiar = document.getElementById('btnCopiar');
+const btnPublica= document.getElementById('btnPublico');
+const btnPrivada = document.getElementById('btnPrivado');
+const caixaCopiar = document.getElementById('caixaCopiar');
+
+// Mensagem
+const Feedback = document.getElementById('Feedback');
+
 
 // Atualização de contadores em tempo real
 function updateCounters() {
-    inputCount.textContent = `${inputText.value.length} caracteres`;
-    outputCount.textContent = `${outputText.value.length} caracteres`;
+    entradaContador.textContent = `${entradaTexto.value.length} caracteres`;
+    saidaContador.textContent = `${saidaTexto.value.length} caracteres`;
 }
 
-inputText.addEventListener('input', updateCounters);
+entradaTexto.addEventListener('input', updateCounters);
 
-// Algoritmos com suporte total a UTF-8 e acentuação
-const Algorithms = {
-    base64: {
-    encrypt: (str) => {
-        const bytes = new TextEncoder().encode(str);
-        const binString = Array.from(bytes, (b) => String.fromCharCode(b)).join("");
-        return btoa(binString);
-    },
-    decrypt: (str) => {
-        const binString = atob(str.trim());
-        const bytes = Uint8Array.from(binString, (m) => m.charCodeAt(0));
-        return new TextDecoder().decode(bytes);
-    }
-    },
-    cesar: {
-    encrypt: (str, shift) => {
-        shift = Number(shift) % 26;
-        return str.replace(/[a-zA-Z]/g, (char) => {
-        const base = char <= 'Z' ? 65 : 97;
-        return String.fromCharCode(((char.charCodeAt(0) - base + shift) % 26) + base);
-        });
-    },
-    decrypt: (str, shift) => {
-        shift = Number(shift) % 26;
-        return str.replace(/[a-zA-Z]/g, (char) => {
-        const base = char <= 'Z' ? 65 : 97;
-        return String.fromCharCode(((char.charCodeAt(0) - base - shift + 26) % 26) + base);
-        });
-    }
-    },
-    hex: {
-    encrypt: (str) => {
-        return Array.from(new TextEncoder().encode(str))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join(' ');
-    },
-    decrypt: (str) => {
-        const cleaned = str.replace(/\s+/g, '');
-        if (cleaned.length % 2 !== 0) throw new Error("Código Hexadecimal incompleto");
-        const bytes = [];
-        for (let i = 0; i < cleaned.length; i += 2) {
-        bytes.push(parseInt(cleaned.substr(i, 2), 16));
-        }
-        return new TextDecoder().decode(new Uint8Array(bytes));
-    }
-    },
-    reverse: {
-    encrypt: (str) => Array.from(str).reverse().join(''),
-    decrypt: (str) => Array.from(str).reverse().join('')
-    }
-};
 
 // Processamento
-btnEncrypt.addEventListener('click', () => {
-    const text = inputText.value;
+btnCripto.addEventListener('click', () => {                                     // Criptografia
+    const texto = entradaTexto.value;
+
+    if (!texto) return mostrarMensagem("O campo texto está vazio");
+
+    const cifra = {
+        cifra: texto,
+        p: selecP.value,
+        q: selecQ.value
+    };
+
+    try {
+        const resposta = fetch('http://127.0.0.1:8000/gerar-chaves?bits=2048', {
+            method: 'POST', // Define o método HTTP
+            headers: {
+                'Content-Type': 'application/json' // Avisa a API que estamos enviando um JSON
+            },
+            // Converte o objeto JavaScript em uma string JSON
+            body: JSON.stringify(cifra) 
+        });
+
+        if (!resposta.ok) {
+            throw new Error(`Erro HTTP: ${resposta.status}`);
+        }
+        
+        const dados = resposta.json();
+        saidaTexto.value = dados.texto;
+
+    } catch (err) {
+        mostrarMensagem(`[Erro na criptografia]: ${err.message}`);
+    }
+    updateCounters();
+});
+
+btnDecripto.addEventListener('click', () => {                                   // Descriptografia
+    const text = entradaTexto.value;
     if (!text) return;
     const method = methodSelect.value;
     const shift = cesarShift.value;
 
     try {
-    outputText.value = Algorithms[method].encrypt(text, shift);
+        const resposta = fetch('http://127.0.0.1:8000/gerar-chaves?bits=2048', {
+        method: 'POST', // Define o método HTTP
+        headers: {
+            'Content-Type': 'application/json' // Avisa a API que estamos enviando um JSON
+        },
+            // Converte o objeto JavaScript em uma string JSON
+            body: JSON.stringify(cifra) 
+        });
+
+        if (!resposta.ok) {
+            throw new Error(`Erro HTTP: ${resposta.status}`);
+        }
+        
+        const dados = resposta.json();
+        saidaTexto.value = dados.texto;
     } catch (err) {
-    outputText.value = `[Erro na criptografia]: ${err.message}`;
+    saidaTexto.value = `[Erro]: Formato inválido ou corrompido para o método selecionado.`;
     }
     updateCounters();
 });
 
-btnDecrypt.addEventListener('click', () => {
-    const text = inputText.value;
+btnLimpa.addEventListener('click', () => {                                      // Limpar caixa de texto
+    entradaTexto.value = '';
+    saidaTexto.value = '';
+    updateCounters();
+    entradaTexto.focus();
+});
+
+btnPublica.addEventListener('click', () => {                                    // Exibir Chaves publicas
+    try {
+        const resposta = fetch('http://127.0.0.1:8000/gerar-chaves?bits=2048');
+        
+        if (!resposta.ok) {
+            throw new Error(`Erro HTTP: ${resposta.status}`);
+        }
+        
+        const dados = resposta.json();
+        console.log(dados);
+    } catch (err) {
+    saidaTexto.value = `[Erro]: Formato inválido ou corrompido para o método selecionado.`;
+    }
+    updateCounters();
+});
+
+btnPrivada.addEventListener('click', () => {                                    // Exibir Chaves privadas
+    const text = entradaTexto.value;
     if (!text) return;
-    const method = methodSelect.value;
-    const shift = cesarShift.value;
 
     try {
-    outputText.value = Algorithms[method].decrypt(text, shift);
+        const resposta = fetch('http://127.0.0.1:8000/gerar-chaves?bits=2048', {
+              method: 'POST', // Define o método HTTP
+              headers: {
+            'Content-Type': 'application/json' // Avisa a API que estamos enviando um JSON
+        },
+            // Converte o objeto JavaScript em uma string JSON
+            body: JSON.stringify(cifra) 
+        });
+        if (!resposta.ok) {
+            throw new Error(`Erro HTTP: ${resposta.status}`);
+        }
+        
+        const dados = resposta.json();
+        saidaTexto.value = dados.texto;
     } catch (err) {
-    outputText.value = `[Erro]: Formato inválido ou corrompido para o método selecionado.`;
+    saidaTexto.value = `[Erro]: Formato inválido ou corrompido para o método selecionado.`;
     }
     updateCounters();
-});
-
-btnClear.addEventListener('click', () => {
-    inputText.value = '';
-    outputText.value = '';
-    updateCounters();
-    inputText.focus();
 });
 
 // Cópia para a área de transferência com fallback
-btnCopy.addEventListener('click', () => {
-    if (!outputText.value) return;
+btnCopiar.addEventListener('click', () => {                                 
+    if (!saidaTexto.value) return;
 
-    outputText.select();
-    outputText.setSelectionRange(0, 99999);
+    saidaTexto.select();
+    saidaTexto.setSelectionRange(0, 99999);
 
     let success = false;
     try {
@@ -132,20 +156,42 @@ btnCopy.addEventListener('click', () => {
     }
 
     if (!success && navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(outputText.value).then(showCopiedState);
+    navigator.clipboard.writeText(saidaTexto.value).then(showCopiedState);
     } else if (success) {
     showCopiedState();
     }
 });
 
 function showCopiedState() {
-    btnCopy.classList.add('copied');
-    copyFeedback.textContent = 'Copiado!';
+    btnCopiar.classList.add('copied');
+    caixaCopiar.textContent = 'Copiado!';
     setTimeout(() => {
-    btnCopy.classList.remove('copied');
-    copyFeedback.textContent = 'Copiar';
+    btnCopiar.classList.remove('copied');
+    caixaCopiar.textContent = 'Copiar';
     }, 1800);
 }
+
+function mostrarMensagem(mensagem) {
+    // Define o texto da mensagem
+    Feedback.textContent = mensagem;
+    
+    // Adiciona a classe para mostrar o elemento na tela
+    Feedback.classList.add('show');
+    
+    // Remove a classe após 3000 milissegundos (3 segundos)
+    setTimeout(() => {
+        Feedback.classList.remove('show');
+    }, 3000);
+}
+
+
+
+
+
+
+
+
+
 
 let keyRSA = { e: 0, d: 0, n: 0 };
 

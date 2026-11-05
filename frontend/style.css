@@ -140,7 +140,7 @@ textarea:focus {
 .controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 24px;
     align-items: center;
     justify-content: space-between;
     margin: 18px 0;
@@ -154,10 +154,20 @@ textarea:focus {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
+    justify-content: space-evenly;
+    gap: 16px;
+    width: 100%;
 }
 
-.method-selector, .cesar-config {
+.selector-pq {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.method-selector {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -192,7 +202,8 @@ input[type="number"] {
 
 .action-buttons {
     display: flex;
-    gap: 8px;
+    justify-content: space-around;
+    gap: 24px;
 }
 
 .btn {
@@ -249,6 +260,20 @@ input[type="number"] {
     border-color: rgba(255, 107, 107, 0.5);
 }
 
+.btn.chaves {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    background: transparent;
+    font-weight: 400;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+}
+
+.btn.chaves:hover {
+    color: #6b9fff;
+    border-color: rgba(117, 107, 255, 0.5);
+}
+
 .output-wrapper {
     position: relative;
 }
@@ -291,6 +316,32 @@ input[type="number"] {
     border-color: var(--primary);
 }
 
+.feedback {
+    position: fixed;
+    bottom: 24px;      /* Distância do rodapé */
+    right: 24px;       /* Distância da lateral direita */
+    background-color: #e74c3c; /* Vermelho */
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 9999;     /* Garante que fique por cima de tudo */
+    
+    /* Configuração de animação (invisível por padrão) */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px); /* Começa um pouco abaixo para o efeito de subir */
+    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+}
+
+/* Classe ativada pelo JavaScript para exibir o aviso */
+.feedback.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
 @media (max-width: 640px) {
     .controls {
     flex-direction: column;
@@ -308,4 +359,42 @@ input[type="number"] {
     padding: 8px 6px;
     font-size: 0.75rem;
     }
+}
+
+/* 1. Alterar o tamanho e remover setas no Firefox */
+#numeroQ {
+    width: 120px;   /* Define a largura da caixa */
+    height: 34px;   /* Define a altura da caixa */
+    padding: 4px;   /* Espaçamento interno para o número não colar na borda */
+    font-size: 16px;/* Aumenta o tamanho do número digitado */
+    
+    /* Remove as setas no Firefox */
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* 2. Remover as setas no Chrome, Safari, Edge e Opera */
+#numeroQ::-webkit-outer-spin-button,
+#numeroQ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+#numeroP {
+    width: 120px;   /* Define a largura da caixa */
+    height: 34px;   /* Define a altura da caixa */
+    padding: 4px;   /* Espaçamento interno para o número não colar na borda */
+    font-size: 16px;/* Aumenta o tamanho do número digitado */
+    
+    /* Remove as setas no Firefox */
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* 2. Remover as setas no Chrome, Safari, Edge e Opera */
+#numeroP::-webkit-outer-spin-button,
+#numeroP::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
