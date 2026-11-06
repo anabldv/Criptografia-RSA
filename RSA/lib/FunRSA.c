@@ -120,7 +120,7 @@ static int chave_privada(uint32_t phi, uint32_t e, uint32_t *d, int debug) {
 
         //contador++;
         if ((contador++) >= 100) return 1;
-        if(debug) printf("\n[DEBUG - 4] Contador: %d\n", );
+        if(debug) printf("\n[DEBUG - 4] Contador: %d\n", contador);
     } 
 
 

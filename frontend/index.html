@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criptografia RSA</title>
+  
+  <!--  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- arquivo style.css -->
+  <link rel="stylesheet" href="style.css">  
+
+
+</head>
+  <body>
+
+    <div class="container">
+      <header class="header">
+        <div class="terminal-badge">
+          <span class="status-dot"></span>
+          SYS-v1.0
+        </div>
+        <h1>Criptografia RSA</h1>
+        <!-- <p>Processe suas mensagens em tempo real de forma local e segura.</p> -->
+      </header>
+
+      <main class="panel">
+        <!-- Entrada -->
+        <section class="box-group">
+          <div class="box-label">
+            <span>ENTRADA</span>
+            <span id="entradaContador" class="counter">0 caracteres</span>
+          </div>
+          <textarea id="entradaTexto" placeholder="Digite aqui..."></textarea>
+        </section>
+
+        <!-- Configurações e Ações -->
+        <section class="controls">
+          <div class="config-area">
+            <div class="selector-pq">
+              <label for="numeroP">Selecione p: </label>
+              <input type="number" id="numeroP">
+            </div>
+            <div class="selector-pq">
+              <label for="numeroQ">Selecione q: </label>
+              <input type="number" id="numeroQ">
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button id="btnCripto" class="btn primary">Criptografar</button>
+            <button id="btnDecripto" class="btn secondary">Descriptografar</button>
+          </div>
+          <div class="action-buttons">
+            <button id="btnLimpa" class="btn ghost">Limpar</button>
+          </div>
+        </section>
+
+        <!-- Saída -->
+        <section class="box-group">
+          <div class="box-label">
+            <span>SAÍDA</span>
+            <span id="saidaContador" class="counter">0 caracteres</span>
+          </div>
+          <div class="output-wrapper">
+            <textarea id="saidaTexto" readonly placeholder="Saida..."></textarea>
+          </div>
+
+            <button id="btnPublico" class="btn chaves">Chave Publica</button>
+            <button id="btnPrivado" class="btn chaves">Chave Privada</button>
+        </section>
+      </main>
+    </div>
+
+    <div id="Feedback" class="feedback"></div>
+    <!-- arquivo JavaScript. script.js -->
+  
+    <script src="script.js"></script>
+  </body>
+</html>

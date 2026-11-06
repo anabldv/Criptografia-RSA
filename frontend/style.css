@@ -1,0 +1,400 @@
+:root {
+    --bg-main: #050806;
+    --bg-panel: #0a110c;
+    --bg-input: #040705;
+    --border: #16261a;
+    --border-focus: #00ff66;
+    --primary: #00ff66;
+    --primary-glow: rgba(0, 255, 102, 0.2);
+    --primary-hover: #00cc52;
+    --text-main: #e6f7ec;
+    --text-muted: #5f8067;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 255, 102, 0.08) 0%, transparent 65%),
+    linear-gradient(rgba(0, 255, 102, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 102, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 28px 28px, 28px 28px;
+}
+
+.container {
+    width: 100%;
+    max-width: 720px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.terminal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--primary);
+    border: 1px solid var(--border);
+    background: rgba(0, 255, 102, 0.03);
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 0 6px var(--primary);
+    animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.header h1 {
+    font-size: clamp(1.3rem, 4vw, 1.75rem);
+    color: var(--text-main);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+}
+
+.header p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 1px rgba(0, 255, 102, 0.2);
+}
+
+.box-group {
+    margin-bottom: 18px;
+}
+
+.box-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.counter {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 0.72rem;
+}
+
+textarea {
+    width: 100%;
+    height: 125px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    padding: 14px;
+    resize: vertical;
+    outline: none;
+    transition: all 0.2s ease;
+    line-height: 1.4;
+}
+
+textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: center;
+    justify-content: space-between;
+    margin: 18px 0;
+    padding: 14px;
+    background: rgba(4, 7, 5, 0.7);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.config-area {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 16px;
+    width: 100%;
+}
+
+.selector-pq {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.method-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+select, input[type="number"] {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--primary);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    padding: 7px 10px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+select:focus, input[type="number"]:focus {
+    border-color: var(--primary);
+}
+
+input[type="number"] {
+    width: 58px;
+    text-align: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-around;
+    gap: 24px;
+}
+
+.btn {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn.primary {
+    background: var(--primary);
+    color: #040705;
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 14px rgba(0, 255, 102, 0.25);
+}
+
+.btn.primary:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 0 20px rgba(0, 255, 102, 0.4);
+}
+
+.btn.secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid rgba(0, 255, 102, 0.5);
+}
+
+.btn.secondary:hover {
+    background: rgba(0, 255, 102, 0.08);
+    border-color: var(--primary);
+}
+
+.btn.ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+}
+
+.btn.ghost:hover {
+    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.5);
+}
+
+.btn.chaves {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    background: transparent;
+    font-weight: 400;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+}
+
+.btn.chaves:hover {
+    color: #6b9fff;
+    border-color: rgba(117, 107, 255, 0.5);
+}
+
+.output-wrapper {
+    position: relative;
+}
+
+.output-wrapper textarea {
+    color: var(--primary);
+    background: #030604;
+    border-color: rgba(0, 255, 102, 0.25);
+    padding-right: 95px;
+}
+
+.btn-copy {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(10, 17, 12, 0.9);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s;
+}
+
+.btn-copy:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(0, 255, 102, 0.08);
+}
+
+.btn-copy.copied {
+    background: var(--primary);
+    color: #040705;
+    border-color: var(--primary);
+}
+
+.feedback {
+    position: fixed;
+    bottom: 24px;      /* Distância do rodapé */
+    right: 24px;       /* Distância da lateral direita */
+    background-color: #e74c3c; /* Vermelho */
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 9999;     /* Garante que fique por cima de tudo */
+    
+    /* Configuração de animação (invisível por padrão) */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px); /* Começa um pouco abaixo para o efeito de subir */
+    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+}
+
+/* Classe ativada pelo JavaScript para exibir o aviso */
+.feedback.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+    .controls {
+    flex-direction: column;
+    align-items: stretch;
+    }
+    .config-area {
+    width: 100%;
+    justify-content: space-between;
+    }
+    .action-buttons {
+    width: 100%;
+    }
+    .action-buttons .btn {
+    flex: 1;
+    padding: 8px 6px;
+    font-size: 0.75rem;
+    }
+}
+
+/* 1. Alterar o tamanho e remover setas no Firefox */
+#numeroQ {
+    width: 120px;   /* Define a largura da caixa */
+    height: 34px;   /* Define a altura da caixa */
+    padding: 4px;   /* Espaçamento interno para o número não colar na borda */
+    font-size: 16px;/* Aumenta o tamanho do número digitado */
+    
+    /* Remove as setas no Firefox */
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* 2. Remover as setas no Chrome, Safari, Edge e Opera */
+#numeroQ::-webkit-outer-spin-button,
+#numeroQ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+#numeroP {
+    width: 120px;   /* Define a largura da caixa */
+    height: 34px;   /* Define a altura da caixa */
+    padding: 4px;   /* Espaçamento interno para o número não colar na borda */
+    font-size: 16px;/* Aumenta o tamanho do número digitado */
+    
+    /* Remove as setas no Firefox */
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* 2. Remover as setas no Chrome, Safari, Edge e Opera */
+#numeroP::-webkit-outer-spin-button,
+#numeroP::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
