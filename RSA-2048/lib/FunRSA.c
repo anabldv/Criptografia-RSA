@@ -490,7 +490,9 @@ static int miller_rabin(const s_BigNum *n, int rodadas) {
 
     d = nm1;
     int s = 0;
-    while ((d.d[0] & 1) == 0) { big_desloca_dir(&d); s++; } // n-1 = 2^s * d
+    while ((d.d[0] & 1) == 0) { // n-1 = 2^s * d
+        big_desloca_dir(&d); s++; 
+    } 
 
     int bits = big_bits(n);
     for (int r = 0; r < rodadas; r++) {
@@ -549,7 +551,11 @@ static int gera_p_q(s_RSA *Cifra, int debug) {
 
     if (bits < 64 || bits > MAX_BITS || bits % 2 != 0) return 1;
     if (gera_primo(&Cifra->p, bits / 2)) return 2;
-    do { if (gera_primo(&Cifra->q, bits / 2)) return 2; } while (big_compara(&Cifra->p, &Cifra->q) == 0);
+    
+    do { 
+        if (gera_primo(&Cifra->q, bits / 2)) return 2; 
+    } while (big_compara(&Cifra->p, &Cifra->q) == 0);
+
     return 0;
 }
 
@@ -862,8 +868,9 @@ static int descriptografar(const s_RSA *c, const char *msg, int fmt, char **said
     return retorno;
 }
 
-
-//=========================================================================================  Inicializadores (tratam os erros de cada etapa)
+//===========================================================================================================================================
+//============================================================  Inicializadores  ============================================================
+//===========================================================================================================================================
 static int inicia_chaves(s_RSA *Cifra, int debug){
     int retorno;
     s_BigNum phi;
@@ -871,7 +878,7 @@ static int inicia_chaves(s_RSA *Cifra, int debug){
     Cifra->chaves = 0;
     Cifra->pronto = 0;
 
-    // Sorteia p e q, a nao ser que o usuario tenha informado
+    // Sorteia p e q só se o usuario não informar
     if (!Cifra->primos_manuais){
         if ((retorno = gera_p_q(Cifra, debug)) != 0){
             switch (retorno){
