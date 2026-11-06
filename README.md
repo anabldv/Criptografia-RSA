@@ -7,6 +7,8 @@ python -m venv .venv
 
 ```bash
 .venv\Scripts\Activate.ps1
+ou
+.venv\bin\Activate.ps1
 ```
 
 ```bash
