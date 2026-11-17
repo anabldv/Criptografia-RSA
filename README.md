@@ -3,9 +3,9 @@ Trabalho de Segurança da informação
 
 ### Autores
 - Alexandre de Paula Carvalho 2840482423014
-- Ana Beatriz Baldiva 2840482423014
-- Guilherme Assunção Barboza 2840482423014
-- Lidia Rocha Arruda 2840482423014
+- Ana Beatriz Baldiva         2840482423014
+- Guilherme Assunção Barboza  2840482423014
+- Lidia Rocha Arruda          2840482423014
 ---
 
 Para criar um ambiente virtual no python
