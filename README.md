@@ -8,7 +8,7 @@ Trabalho de Segurança da informação
 
 - Guilherme Assunção Barboza  - `2840482423014`
 
-- Lidia Rocha Arruda          - `2840482423022`
+- Lídia da Rocha Arruda          - `2840482423022`
 ---
 
 Para criar um ambiente virtual no python
